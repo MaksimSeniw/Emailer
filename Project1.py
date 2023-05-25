@@ -50,7 +50,7 @@ def read_email_and_respond():
                 #print(f'Subject: {mail_subject}')
                 #print(f'Content: {mail_content}')
     ounces_drank = [int(s) for s in mail_content.split() if s.isdigit()]
-    ounces_drank.remove(2022)
+    ounces_drank.remove(2023)#For some reason have to to remove the current year from an incoming email to read the actual sent number.
     ounces_drank = [str(integer) for integer in ounces_drank]
     ounces_drank = "".join(ounces_drank)
     ounces_drank = int(ounces_drank)
@@ -95,7 +95,7 @@ def delete_email():
 if (X == 1):
     while(True):
         email_alert()
-        time.sleep(60)
+        time.sleep(60) #Time between each email 
         read_email_and_respond()
         delete_email()
         time.sleep(120)
