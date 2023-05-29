@@ -10,23 +10,19 @@ import ssl
 
 PASSWORD = 'oxvpftwlkwvejaud'
 EMAIL = 'seniwprogramming@gmail.com'
-RECIPIENT = input("What Email Address Would You Like to Use?\n")
+RECIPIENT = 'maksimseniw@gmail.com'
 SERVER = 'imap.gmail.com'
-WATER = input("What is Your Hydration Goal?\n")
-TIME = input("How Often Would You Like to be Emailed?(How many min. between each notifcation)\n")
 X = 1
-
 def email_alert():
     ctx = ssl.create_default_context()
     message = MIMEMultipart("mixed")
     message["Subject"] = "Hydration"
     message["From"] = EMAIL
     message["To"] = RECIPIENT
-    message.attach(MIMEText("How much water do you think you've drank today? (In fluid ounces) Reply STOP to end emails.", "plain"))
+    message.attach(MIMEText("How much water do you think you've drank today? (In fluid ounces)", "plain"))
     with smtplib.SMTP_SSL("smtp.gmail.com", port=465, context=ctx) as server:
         server.login(EMAIL, PASSWORD)
         server.sendmail(EMAIL, RECIPIENT, message.as_string())
-
 def read_email_and_respond():
     mail = imaplib.IMAP4_SSL(SERVER)
     mail.login(EMAIL, PASSWORD)
@@ -57,15 +53,6 @@ def read_email_and_respond():
     ounces_drank.remove(2023)#For some reason have to to remove the current year from an incoming email to read the actual sent number.
     ounces_drank = [str(integer) for integer in ounces_drank]
     ounces_drank = "".join(ounces_drank)
-    
-    # if ("STOP" in ounces_drank):
-    #     message.attach(MIMEText("EMAILS ENDED", "plain"))
-    #     X = 0
-    #     with smtplib.SMTP_SSL("smtp.gmail.com", port=465, context=ctx) as server:
-    #         server.login(EMAIL, PASSWORD)
-    #         server.sendmail(EMAIL, RECIPIENT, message.as_string())
-    #     exit()
-
     ounces_drank = int(ounces_drank)
     #print(ounces_drank)
     ctx = ssl.create_default_context()
@@ -73,19 +60,18 @@ def read_email_and_respond():
     message["Subject"] = "Hydration"
     message["From"] = EMAIL
     message["To"] = RECIPIENT
-    if (ounces_drank > 0 and ounces_drank < int(WATER)):
-        message.attach(MIMEText("You have drank " + str(ounces_drank) + " ounces. You should drink " + str(int(WATER) - ounces_drank) + " more to hit recommended targets. Reply STOP to end emails.", "plain"))
+    if (ounces_drank > 0 and ounces_drank < 125):
+        message.attach(MIMEText("You have drank " + str(ounces_drank) + " ounces. You should drink " + str(125 - ounces_drank) + " more to hit recommended targets.", "plain"))
         X = 1
-    elif (ounces_drank >= int(WATER)):
-        message.attach(MIMEText("You have hit recommended targets on how much you should drink per day! Reply STOP to end emails.", "plain"))
+    elif (ounces_drank >= 125):
+        message.attach(MIMEText("You have hit recommended targets on how much you should drink per day!", "plain"))
         X = 0
     elif (ounces_drank < 0):
-        message.attach(MIMEText("Did someone steal your water? Please enter an actual number. Reply STOP to end emails.", "plain"))
+        message.attach(MIMEText("Did someone steal your water? Please enter an actual number.", "plain"))
         X = 1
     with smtplib.SMTP_SSL("smtp.gmail.com", port=465, context=ctx) as server:
         server.login(EMAIL, PASSWORD)
         server.sendmail(EMAIL, RECIPIENT, message.as_string())
-
 def delete_email():
     imap = imaplib.IMAP4_SSL("imap.gmail.com")
     imap.login(EMAIL, PASSWORD)
@@ -109,10 +95,10 @@ def delete_email():
 if (X == 1):
     while(True):
         email_alert()
-        time.sleep(int(TIME)*60) #Time between each email 
+        time.sleep(60) #Time between each email 
         read_email_and_respond()
         delete_email()
-        time.sleep(int(TIME)*60)
+        time.sleep(120)
 elif (X == 0):
-    time.sleep(int(TIME)*60)
+    time.sleep(60)
     X = 1
